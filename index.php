@@ -1,40 +1,57 @@
+<?php require __DIR__ . '/php/db.php'; ?>
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="utf-8">
-  <title>Guía de JS – Menú</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta charset="UTF-8">
+  <title>Guía PHP – Menú</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <style>
-    body { font-family: system-ui, Arial, sans-serif; padding: 24px; }
-    h1 { margin-bottom: 16px; }
-    ul { list-style: none; padding: 0; }
-    li { margin: 10px 0; }
-    a { text-decoration: none; padding: 10px 14px; border: 1px solid #ccc; border-radius: 8px; display: inline-block; }
-    a:hover { background: #f5f5f5; }
+    :root{ --bg:#f7f7fa; --card:#fff; --line:#e8e8ef; --text:#1f2328; --muted:#6a737d; --link:#0a7; }
+    *{ box-sizing:border-box; } body{ margin:0; background:var(--bg); color:var(--text); font:16px/1.5 system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif; }
+    .wrap{ max-width:960px; margin:32px auto; padding:0 16px; display:grid; gap:18px; }
+    .title{ margin:0; font-size:28px; font-weight:800; }
+    .card{ background:var(--card); border:1px solid var(--line); border-radius:14px; padding:16px; box-shadow:0 1px 3px rgba(0,0,0,.04); }
+    .sec{ margin:0 0 8px; font-size:18px; font-weight:800; }
+    .menu{ display:grid; gap:6px; padding-left:18px; margin: 0; }
+    .menu li{ margin:0; }
+    a{ color:var(--link); text-decoration:none; }
+    a:hover{ text-decoration:underline; }
+    .muted{ color:var(--muted); font-size:13px; }
   </style>
 </head>
 <body>
-  <h1>Guía de PHP</h1>
+  <main class="wrap">
+    <header>
+      <h1 class="title">Guía PHP – Menú</h1>
+      <p class="muted">Opciones recuperadas dinámicamente desde MySQL.</p>
+    </header>
 
-  <h2>Actividades</h2>
-  <ul>
-    <li><a href="php/valor-generado.php">Ejercicio 4 – Mostrar en pantalla valor generado y si es menor o igual a 50 o mayor</a></li>
-    <li><a href="php/tipos-variables.php">Ejercicio 5 – Mostrar en pantalla los tipos de variables</a></li>
-    <li><a href="php/variable-string.php">Ejercicio 6 – Mostrar un texto que incorpore las tres variables</a></li>
-    <li><a href="php/estructura-if.php">Ejercicio 7 – Mostrar en pantalla el número aleatorio</a></li>
-    <li><a href="php/estructura-repetitivas.php">Ejercicio 8 – Mostrar la tabla de multiplicar del 2</a></li>
-    <li><a href="php/form-text-submit1.php">Ejercicio 9 –  Envío de datos de un formulario</a></li>
-    <li><a href="php/form-control-radio1.php">Ejercicio 10 – Formulario (control radio)</a></li>
-    <li><a href="php/form-checkbox1.php">Ejercicio 11 – Formulario (control radio)</a></li>
-    <li><a href="php/form-select1.php">Ejercicio 12 – Formulario (control select)</a></li>
-    <li><a href="php/textarea1.php">Ejercicio 13 – Formulario (control textarea)</a></li>
-    <li><a href="php/vectores.php">Ejercicio 14 – Vectores (tradicionales)</a></li>
-    <li><a href="php/archivo-texto.php">Ejercicio 15 – Creación de un archivo de texto</a></li>
-    <li><a href="php/lectura-archivo-texto.php">Ejercicio 16 – Lectura de un archivo de texto</a></li>
-    <li><a href="php/vectores-asociativos.php">Ejercicio 17 – Vectores (asociativos)</a></li>
-    <li><a href="php/funciones.php">Ejercicio 18 – Funciones en PHP</a></li>
-  </ul>
-
-
+    <?php
+      $sql = "SELECT seccion, titulo, ruta
+              FROM menu_opcion
+              WHERE visible=1
+              ORDER BY seccion IS NULL, seccion, orden, titulo";
+      $res = $mysqli->query($sql);
+      if (!$res) {
+        echo '<div class="card"><strong>Error:</strong> ' . htmlspecialchars($mysqli->error, ENT_QUOTES, 'UTF-8') . '</div>';
+      } else {
+        $seccionActual = null;
+        $bloqueAbierto = false;
+        while ($row = $res->fetch_assoc()) {
+          $sec = $row['seccion'] ?? 'Sin sección';
+          if ($sec !== $seccionActual) {
+            if ($bloqueAbierto) echo '</ul></div>';
+            echo '<div class="card"><h2 class="sec">'. htmlspecialchars($sec, ENT_QUOTES, 'UTF-8') .'</h2><ul class="menu">';
+            $seccionActual = $sec;
+            $bloqueAbierto = true;
+          }
+          $titulo = htmlspecialchars($row['titulo'], ENT_QUOTES, 'UTF-8');
+          $ruta   = htmlspecialchars($row['ruta'],   ENT_QUOTES, 'UTF-8');
+          echo '<li><a href="'. $ruta .'">'. $titulo .'</a></li>';
+        }
+        if ($bloqueAbierto) echo '</ul></div>';
+      }
+    ?>
+  </main>
 </body>
 </html>

@@ -5,3 +5,10 @@ Cantidad de Jamón y Queso: 1
 Nombre: 
 Dirección: 
 --------------------------------------------------------
+Nombre: 
+Dirección: 
+--------------------------------------------------------
+Nombre: sofia
+Dirección: d
+Cantidad de Jamón y Queso: 1
+--------------------------------------------------------
